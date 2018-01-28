@@ -42,10 +42,12 @@ y_test = data_test[:, 0]
 n_stocks = X_train.shape[1]
 
 # Neurons
-n_neurons_1 = 1024
-n_neurons_2 = 512
-n_neurons_3 = 256
-n_neurons_4 = 128
+n_neurons_1 = 2048
+n_neurons_2 = 1024
+n_neurons_3 = 512
+n_neurons_4 = 256
+n_neurons_5 = 128
+n_neurons_6 = 64
 
 # Session
 net = tf.InteractiveSession()
@@ -69,8 +71,13 @@ bias_hidden_3 = tf.Variable(bias_initializer([n_neurons_3]))
 W_hidden_4 = tf.Variable(weight_initializer([n_neurons_3, n_neurons_4]))
 bias_hidden_4 = tf.Variable(bias_initializer([n_neurons_4]))
 
+W_hidden_5 = tf.Variable(weight_initializer([n_neurons_4, n_neurons_5]))
+bias_hidden_5 = tf.Variable(bias_initializer([n_neurons_5]))
+
+W_hidden_6 = tf.Variable(weight_initializer([n_neurons_5, n_neurons_6]))
+bias_hidden_6 = tf.Variable(bias_initializer([n_neurons_6]))
 # Output weights
-W_out = tf.Variable(weight_initializer([n_neurons_4, 1]))
+W_out = tf.Variable(weight_initializer([n_neurons_6, 1]))
 bias_out = tf.Variable(bias_initializer([1]))
 
 # Hidden layer
@@ -78,10 +85,11 @@ hidden_1 = tf.nn.relu(tf.add(tf.matmul(X, W_hidden_1), bias_hidden_1))
 hidden_2 = tf.nn.relu(tf.add(tf.matmul(hidden_1, W_hidden_2), bias_hidden_2))
 hidden_3 = tf.nn.relu(tf.add(tf.matmul(hidden_2, W_hidden_3), bias_hidden_3))
 hidden_4 = tf.nn.relu(tf.add(tf.matmul(hidden_3, W_hidden_4), bias_hidden_4))
-
+hidden_5 = tf.nn.relu(tf.add(tf.matmul(hidden_4, W_hidden_5), bias_hidden_5))
+hidden_6 = tf.nn.relu(tf.add(tf.matmul(hidden_5, W_hidden_6), bias_hidden_6))
 # Output layer (transpose!)
-out = tf.transpose(tf.add(tf.matmul(hidden_4, W_out), bias_out))
 
+out = tf.transpose(tf.add(tf.matmul(hidden_6, W_out), bias_out))
 # Cost function
 mse = tf.reduce_mean(tf.squared_difference(out, Y))
 
@@ -100,7 +108,7 @@ line2, = ax1.plot(y_test * 0.5)
 plt.show()
 
 # Fit neural net
-batch_size = 256
+batch_size = 128
 mse_train = []
 mse_test = []
 
@@ -122,7 +130,7 @@ for e in range(epochs):
         net.run(opt, feed_dict={X: batch_x, Y: batch_y})
 
         # Show progress
-        if np.mod(i, 5) == 0:
+        if np.mod(i, 50) == 0:
             # MSE train and test
             mse_train.append(net.run(mse, feed_dict={X: X_train, Y: y_train}))
             mse_test.append(net.run(mse, feed_dict={X: X_test, Y: y_test}))
@@ -133,3 +141,6 @@ for e in range(epochs):
             line2.set_ydata(pred)
             plt.title('Epoch ' + str(e) + ', Batch ' + str(i))
             plt.pause(0.01)
+
+while(True):
+    pass
